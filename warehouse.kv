@@ -1,0 +1,168 @@
+#:import Factory kivy.factory.Factory
+#:import datetime datetime
+
+<StatusLabel@Label>:
+    size_hint_y: None
+    height: dp(40)
+    halign: 'center'
+    valign: 'middle'
+    canvas.before:
+        Color:
+            rgba: 0.2, 0.2, 0.2, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<ActionButton@Button>:
+    size_hint_y: None
+    height: dp(50)
+    font_size: '18sp'
+
+<SearchResultPopup@Popup>:
+    title: "Résultats de la recherche"
+    size_hint: 0.9, 0.8
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+        ScrollView:
+            size_hint_y: 0.9
+            Label:
+                id: results_label
+                text: "Aucun résultat."
+                size_hint_y: None
+                height: self.texture_size[1] # Ajuste la hauteur au contenu
+                text_size: self.width, None   # Permet le retour à la ligne
+                padding: dp(10), dp(10)
+                markup: True # Pour formater le texte si besoin
+        Button:
+            text: "Fermer"
+            size_hint_y: None
+            height: dp(50)
+            on_release: root.dismiss()
+
+# Rule for the Python class ConfirmationPopup defined in main.py
+<ConfirmationPopup>:
+    title: "Confirmation requise"
+    size_hint: 0.8, 0.4
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+        Label:
+            id: confirmation_text
+            text: "Texte de confirmation ici"
+            halign: 'center'
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+            Button:
+                id: confirm_button
+                text: "Confirmer"
+                on_release: root.dispatch('on_confirm')
+            Button:
+                id: cancel_button
+                text: "Annuler"
+                on_release: root.dismiss() # Ferme simplement le popup
+
+
+ScreenManager:
+    id: screen_manager
+    ScanScreen:
+        name: 'scan_screen'
+    SearchScreen:
+        name: 'search_screen'
+
+<ScanScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+
+        Label:
+            text: "Gestion d'Entrepôt Pharma"
+            font_size: '24sp'
+            size_hint_y: None
+            height: dp(60)
+
+        StatusLabel:
+            id: status_label
+            text: "Prêt. Appuyez sur 'Scanner Produit'."
+
+        ActionButton:
+            id: scan_product_button
+            text: "1. Scanner Produit (Palette)"
+            on_release: app.scan_product()
+
+        ActionButton:
+            id: scan_location_button
+            text: "2. Scanner Emplacement"
+            disabled: True # Désactivé au début
+            on_release: app.scan_location()
+
+        ActionButton:
+            id: delete_palette_button
+            text: "3. Supprimer Palette (Livraison)"
+            background_color: (0.8, 0.2, 0.2, 1) # Reddish color
+            on_release: app.prepare_for_delete_scan()
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            ActionButton:
+                text: "Rechercher"
+                on_release: app.root.current = 'search_screen'
+
+<SearchScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+
+        Label:
+            text: "Recherche d'Inventaire"
+            font_size: '24sp'
+            size_hint_y: None
+            height: dp(60)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            Label:
+                text: "Rechercher par:"
+                size_hint_x: 0.3
+            Spinner:
+                id: search_type_spinner
+                text: 'Numéro de Lot'
+                values: ['Numéro de Lot', 'Nom du Produit']
+                size_hint_x: 0.7
+
+        TextInput:
+            id: search_input
+            hint_text: "Entrez le numéro de lot ou le nom du produit"
+            size_hint_y: None
+            height: dp(40)
+            multiline: False
+
+        ActionButton:
+            text: "Lancer la Recherche"
+            on_release: app.perform_search()
+
+        ScrollView:
+            id: results_scrollview
+            Label:
+                id: search_results_label
+                text: "Les résultats s'afficheront ici."
+                size_hint_y: None
+                height: self.texture_size[1]
+                text_size: self.width, None
+                padding: dp(10), dp(10)
+                markup: True
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            ActionButton:
+                text: "Retour au Scan"
+                on_release: app.root.current = 'scan_screen'

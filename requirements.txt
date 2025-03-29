@@ -1,0 +1,13 @@
+kivy
+# Pour le scan QR sur Windows (webcam)
+opencv-python-headless  # ou opencv-python si vous avez besoin de l'interface cv2
+pyzbar
+# Pour le scan QR sur Android (via buildozer/pyjnius ou plyer)
+# pyjnius (souvent inclus avec python-for-android)
+# zxing-python ou pyzxing (peuvent nécessiter des dépendances supplémentaires sur Android)
+# Alternative Android: plyer (si sa fonctionnalité barcode est suffisante)
+plyer
+# Pour Excel
+openpyxl
+# Pour la gestion des chemins
+pillow # pyzbar en dépend souvent
